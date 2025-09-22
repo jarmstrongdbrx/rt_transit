@@ -1,0 +1,56 @@
+# The main job for gtfs_rt.
+resources:
+  jobs:
+    gtfs_rt_job:
+      name: gtfs_rt_job
+
+      environments:
+        - environment_key: "default"
+          spec:
+            #client: "1"
+            dependencies: ["gtfs-realtime-bindings==1.0.0"]
+            environment_version: "4"
+
+
+
+      tasks:
+        - task_key: service_alerts_raw
+          environment_key: "default"
+          spark_python_task:
+            python_file: ../src/raw/gtfs_rt_raw_ingest.py
+            parameters:
+              - gtfs_rt_url
+              - https://realtime.hsl.fi/realtime/service-alerts/v2/hsl
+              - message_name
+              - service_alerts
+              - poll_interval_seconds
+              - "60"
+          
+        - task_key: trip_updates_raw
+          environment_key: "default"
+          spark_python_task:
+            python_file: ../src/raw/gtfs_rt_raw_ingest.py
+            parameters:
+              - gtfs_rt_url
+              - https://realtime.hsl.fi/realtime/trip-updates/v2/hsl
+              - message_name
+              - trip_updates
+              - poll_interval_seconds
+              - "5"
+
+        - task_key: vehicle_positions_raw
+          environment_key: "default"
+          spark_python_task:
+            python_file: ../src/raw/gtfs_rt_raw_ingest.py
+            parameters:
+              - gtfs_rt_url
+              - https://realtime.hsl.fi/realtime/vehicle-positions/v2/hsl
+              - message_name
+              - vehicle_positions
+              - poll_interval_seconds
+              - "0.25"
+
+        - task_key: gtfs_rt_pipeline
+          pipeline_task:
+            pipeline_id: ${resources.pipelines.gtfs_rt_pipeline.id}
+            full_refresh: false

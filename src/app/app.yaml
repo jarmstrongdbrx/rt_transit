@@ -1,0 +1,15 @@
+# Databricks App Configuration
+# This file defines how the Streamlit app should run
+
+source_code_path: ./gtfs_rt_app.py
+
+command:
+  - "streamlit"
+  - "run"
+  - "app.py"
+
+env:
+  - name: APP_NAME
+    value: "GTFS RT Transit App"
+  - name: APP_VERSION
+    value: "0.1.0"

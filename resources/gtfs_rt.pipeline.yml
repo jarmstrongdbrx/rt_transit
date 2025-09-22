@@ -1,0 +1,15 @@
+# DLT Pipeline configuration for GTFS-RT Bronze Tables
+resources:
+  pipelines:
+    gtfs_rt_pipeline:
+      name: gtfs_rt
+      catalog: prod_lakehouse
+      schema: vehicle
+      libraries:
+        - file:
+            path: ../src/pipeline/gtfs.py
+      serverless: true
+      development: false
+      photon: true
+      edition: "advanced"
+      continuous: true

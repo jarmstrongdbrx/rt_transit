@@ -1,0 +1,47 @@
+# This is a Databricks asset bundle definition for gtfs_rt.
+# See https://docs.databricks.com/dev-tools/bundles/index.html for documentation.
+bundle:
+  name: gtfs_rt
+  uuid: 0d5cfff8-19f4-42e4-b4d6-c5cf475ef51b
+
+include:
+  - resources/*.yml
+
+resources:
+  database_instances:
+    demo_db:
+      name: demo-db
+      capacity: CU_1
+
+  schemas:
+    vehicle:
+      name: vehicle
+      catalog_name: prod_lakehouse
+      comment: Schema for vehicle-related data and analytics
+
+  volumes:
+    gtfs_rt_raw:
+      name: gtfs_rt_raw
+      catalog_name: prod_lakehouse
+      schema_name: vehicle
+      volume_type: MANAGED
+      comment: Volume for storing raw GTFS real-time data
+
+  apps:
+    gtfs_rt_app:
+      name: gtfs-rt-app
+      description: 'GTFS Real-time Transit Data Application - Streamlit Dashboard'
+      source_code_path: ./src/app
+      resources:
+        - name: "app-database"
+          database:
+            database_name: prod_lakehouse
+            instance_name: demo-db
+            permission: "CAN_CONNECT_AND_CREATE"
+            
+
+targets:
+  dev:
+    default: true
+    workspace:
+      host: https://dbc-428f441f-4ca4.cloud.databricks.com/
