@@ -75,6 +75,42 @@ Key configuration is managed through:
 - `resources/gtfs_rt.job.yml` - Data ingestion job definitions  
 - `resources/gtfs_rt.pipeline.yml` - DLT pipeline configuration
 
+#### Databricks Resources Deployed
+
+The `databricks.yml` bundle configuration deploys the following resources (including all resources defined in `resources/*.yml`):
+
+**Infrastructure Resources:**
+- **Database Instance** (`demo-db`) - CU_1 capacity Lakebase database for real-time queries
+- **Unity Catalog Schema** (`prod_lakehouse.vehicle`) - Organized data storage for vehicle analytics
+- **Unity Catalog Volume** (`prod_lakehouse.vehicle.gtfs_rt_raw`) - Managed storage for raw GTFS-RT data
+
+**Data Processing Pipeline:**
+- **DLT Pipeline** (`gtfs_rt_pipeline`) - Serverless Delta Live Tables pipeline with:
+  - Photon engine enabled for optimized performance
+  - Advanced edition with continuous processing
+  - Bronze and silver table transformations from `src/pipeline/gtfs.py`
+  - Automatic schema evolution and data quality monitoring
+
+**Data Ingestion Jobs:**
+- **GTFS-RT Job** (`gtfs_rt_job`) - Multi-task job orchestrating real-time data collection:
+  - `service_alerts_raw` - Polls HSL service alerts every 60 seconds
+  - `trip_updates_raw` - Polls HSL trip updates every 5 seconds  
+  - `vehicle_positions_raw` - Polls HSL vehicle positions every 0.25 seconds
+  - `gtfs_rt_pipeline` - Triggers DLT pipeline processing
+  - Environment with `gtfs-realtime-bindings==1.0.0` dependency
+
+**Data Synchronization:**
+- **Synced Database Tables** - Continuous sync from lakehouse to Lakebase for low-latency access:
+  - `lb_vehicle_positions` - Real-time vehicle positions (primary key: `vehicle_id`, timeseries: `feed_timestamp`)
+  - `lb_trip_updates` - Trip predictions and delays (composite key: `trip_id`, `stop_id`, `stop_sequence`)
+  - `lb_service_alerts` - Service disruptions (primary key: `alert_id`, timeseries: `feed_timestamp`)
+  - `lb_service_alerts_entities` - Affected routes/stops per alert (composite key: `alert_id`, `affected_route_id`, `affected_stop_id`)
+
+**Application Resources:**
+- **Streamlit App** (`gtfs-rt-app`) - Interactive dashboard with database connectivity permissions
+
+This architecture provides end-to-end real-time transit data processing: from ingestion → transformation → synchronization → visualization, with continuous processing and low-latency access optimized for dashboard queries.
+
 ## 📊 Data Sources
 
 The platform ingests three types of real-time data from HSL:

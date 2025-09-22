@@ -27,6 +27,59 @@ resources:
       volume_type: MANAGED
       comment: Volume for storing raw GTFS real-time data
 
+  synced_database_tables:
+    lb_vehicle_positions_sync:
+      name: prod_lakehouse.vehicle.lb_vehicle_positions
+      database_instance_name: demo-db
+      logical_database_name: gtfs_rt
+      spec:
+        source_table_full_name: prod_lakehouse.vehicle.silver_vehicle_positions
+        scheduling_policy: CONTINUOUS
+        primary_key_columns:
+          - vehicle_id
+        timeseries_key: feed_timestamp
+        create_database_objects_if_missing: true
+
+    lb_trip_updates_sync:
+      name: prod_lakehouse.vehicle.lb_trip_updates
+      database_instance_name: demo-db
+      logical_database_name: gtfs_rt
+      spec:
+        source_table_full_name: prod_lakehouse.vehicle.silver_trip_updates
+        scheduling_policy: CONTINUOUS
+        primary_key_columns:
+          - trip_id
+          - stop_id
+          - stop_sequence
+        timeseries_key: feed_timestamp
+        create_database_objects_if_missing: true
+
+    lb_service_alerts_sync:
+      name: prod_lakehouse.vehicle.lb_service_alerts
+      database_instance_name: demo-db
+      logical_database_name: gtfs_rt
+      spec:
+        source_table_full_name: prod_lakehouse.vehicle.silver_service_alerts
+        scheduling_policy: CONTINUOUS
+        primary_key_columns:
+          - alert_id
+        timeseries_key: feed_timestamp
+        create_database_objects_if_missing: true
+
+    lb_service_alerts_entities_sync:
+      name: prod_lakehouse.vehicle.lb_service_alerts_entities
+      database_instance_name: demo-db
+      logical_database_name: gtfs_rt
+      spec:
+        source_table_full_name: prod_lakehouse.vehicle.silver_service_alerts_entities
+        scheduling_policy: CONTINUOUS
+        primary_key_columns:
+          - alert_id
+          - affected_route_id
+          - affected_stop_id
+        timeseries_key: feed_timestamp
+        create_database_objects_if_missing: true
+
   apps:
     gtfs_rt_app:
       name: gtfs-rt-app
