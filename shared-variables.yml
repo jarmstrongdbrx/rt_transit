@@ -1,0 +1,36 @@
+# Shared variables for all GTFS-RT bundles
+# This file contains the centralized configuration for catalog, schema, and database parameters
+# that are used across all bundles in the project.
+
+variables:
+  catalog_name:
+    default: john_test
+    description: Name of the catalog for all database objects
+  
+  schema_name:
+    default: vehicle2
+    description: Name of the schema for vehicle-related data
+  
+  database_instance_name:
+    default: vehicle-db1b
+    description: Name of the database instance
+  
+  logical_database_name:
+    default: gtfs_rt
+    description: Name of the logical database
+  
+  scheduling_policy:
+    default: CONTINUOUS
+    description: Scheduling policy for sync tables
+  
+  create_objects_if_missing:
+    default: true
+    description: Whether to create database objects if they don't exist
+  
+  volume_base_path:
+    default: /Volumes/john_test/vehicle2/gtfs_rt_raw
+    description: Base path for the GTFS-RT raw data volume
+  
+  workspace_host:
+    default: https://dbc-5de75ff1-1483.cloud.databricks.com/
+    description: Databricks workspace host URL

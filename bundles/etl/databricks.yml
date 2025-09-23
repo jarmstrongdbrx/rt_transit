@@ -1,0 +1,14 @@
+# Databricks asset bundle for ETL pipeline
+# Bundle 3: DLT pipeline for data processing
+
+include:
+  - ../../shared-variables.yml
+  - resources/*.yml
+
+bundle:
+  name: gtfs_rt_etl
+  uuid: 2f7e111b-3bf6-44f6-d6f8-e7e1697f173d
+
+targets:
+  dev:
+    default: true

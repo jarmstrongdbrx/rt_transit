@@ -1,8 +1,8 @@
-# The main job for gtfs_rt.
+# The main job for gtfs_rt data ingestion
 resources:
   jobs:
     gtfs_rt_job:
-      name: gtfs_rt_job
+      name: gtfs_rt_ingestion_job
 
       environments:
         - environment_key: "default"
@@ -10,8 +10,6 @@ resources:
             #client: "1"
             dependencies: ["gtfs-realtime-bindings==1.0.0"]
             environment_version: "4"
-
-
 
       tasks:
         - task_key: service_alerts_raw
@@ -27,7 +25,7 @@ resources:
               - "60"
               - volume_base_path
               - "/Volumes/${var.catalog_name}/${var.schema_name}/gtfs_rt_raw"
-          
+        
         - task_key: trip_updates_raw
           environment_key: "default"
           spark_python_task:
@@ -55,8 +53,3 @@ resources:
               - "0.25"
               - volume_base_path
               - "/Volumes/${var.catalog_name}/${var.schema_name}/gtfs_rt_raw"
-
-        - task_key: gtfs_rt_pipeline
-          pipeline_task:
-            pipeline_id: ${resources.pipelines.gtfs_rt_pipeline.id}
-            full_refresh: false

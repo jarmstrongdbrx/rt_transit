@@ -200,7 +200,7 @@ def main() -> None:
         url = args.get('gtfs_rt_url', DEFAULT_GTFS_RT_URL)
         message_name = args.get('message_name', 'vehicle_positions')
         poll_interval = float(args.get('poll_interval_seconds', DEFAULT_POLL_INTERVAL_SECONDS))
-        volume_path = DEFAULT_VOLUME_BASE_PATH
+        volume_path = args.get('volume_base_path', DEFAULT_VOLUME_BASE_PATH)
         
         logger.info(f"Starting ingestion for {message_name} from {url}")
         logger.info(f"Poll interval: {poll_interval} seconds")

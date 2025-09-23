@@ -1,0 +1,41 @@
+# Databricks asset bundle for infrastructure components
+# Bundle 1: Catalog, schema, volume, and database instance
+
+include:
+  - ../../shared-variables.yml
+  - resources/*.yml
+
+bundle:
+  name: gtfs_rt_infrastructure
+  uuid: 0d5cfff8-19f4-42e4-b4d6-c5cf475ef51b
+
+resources:
+  database_instances:
+    demo_db:
+      name: ${var.database_instance_name}
+      capacity: CU_1
+
+  schemas:
+    vehicle:
+      name: ${var.schema_name}
+      catalog_name: ${var.catalog_name}
+      comment: Schema for vehicle-related data and analytics
+
+  volumes:
+    gtfs_rt_raw:
+      name: gtfs_rt_raw
+      catalog_name: ${var.catalog_name}
+      schema_name: ${var.schema_name}
+      volume_type: MANAGED
+      comment: Volume for storing raw GTFS real-time data
+
+  database_catalogs:
+    vehicle_db_catalog:
+      name: ${var.schema_name}
+      database_instance_name: ${var.database_instance_name}
+      database_name: ${var.logical_database_name}
+      create_database_if_not_exists: ${var.create_objects_if_missing}
+
+targets:
+  dev:
+    default: true

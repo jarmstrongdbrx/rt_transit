@@ -1,0 +1,67 @@
+# Databricks asset bundle for synced tables
+# Bundle 4: Synced tables
+
+include:
+  - ../../shared-variables.yml
+  - resources/*.yml
+
+bundle:
+  name: gtfs_rt_database
+  uuid: 3f8f222c-4cf7-55f7-e7f9-f8f2708f284e
+
+resources:
+  synced_database_tables:
+    lb_vehicle_positions_sync:
+      name: ${var.catalog_name}.${var.schema_name}.lb_vehicle_positions
+      database_instance_name: ${var.database_instance_name}
+      logical_database_name: ${var.logical_database_name}
+      spec:
+        source_table_full_name: ${var.catalog_name}.${var.schema_name}.silver_vehicle_positions
+        scheduling_policy: ${var.scheduling_policy}
+        primary_key_columns:
+          - vehicle_id
+        timeseries_key: feed_timestamp
+        create_database_objects_if_missing: ${var.create_objects_if_missing}
+
+    lb_trip_updates_sync:
+      name: ${var.catalog_name}.${var.schema_name}.lb_trip_updates
+      database_instance_name: ${var.database_instance_name}
+      logical_database_name: ${var.logical_database_name}
+      spec:
+        source_table_full_name: ${var.catalog_name}.${var.schema_name}.silver_trip_updates
+        scheduling_policy: ${var.scheduling_policy}
+        primary_key_columns:
+          - trip_id
+          - stop_id
+        timeseries_key: feed_timestamp
+        create_database_objects_if_missing: ${var.create_objects_if_missing}
+
+    lb_service_alerts_sync:
+      name: ${var.catalog_name}.${var.schema_name}.lb_service_alerts
+      database_instance_name: ${var.database_instance_name}
+      logical_database_name: ${var.logical_database_name}
+      spec:
+        source_table_full_name: ${var.catalog_name}.${var.schema_name}.silver_service_alerts
+        scheduling_policy: ${var.scheduling_policy}
+        primary_key_columns:
+          - alert_id
+        timeseries_key: feed_timestamp
+        create_database_objects_if_missing: ${var.create_objects_if_missing}
+
+    lb_service_alerts_entities_sync:
+      name: ${var.catalog_name}.${var.schema_name}.lb_service_alerts_entities
+      database_instance_name: ${var.database_instance_name}
+      logical_database_name: ${var.logical_database_name}
+      spec:
+        source_table_full_name: ${var.catalog_name}.${var.schema_name}.silver_service_alerts_entities
+        scheduling_policy: ${var.scheduling_policy}
+        primary_key_columns:
+          - alert_id
+          - affected_route_id
+          - affected_stop_id
+        timeseries_key: feed_timestamp
+        create_database_objects_if_missing: ${var.create_objects_if_missing}
+
+targets:
+  dev:
+    default: true

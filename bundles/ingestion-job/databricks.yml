@@ -1,0 +1,14 @@
+# Databricks asset bundle for data ingestion job
+# Bundle 2: Raw data ingestion job only
+
+include:
+  - ../../shared-variables.yml
+  - resources/*.yml
+
+bundle:
+  name: gtfs_rt_ingestion_job
+  uuid: 1e6d000a-2af5-43f5-c5e7-d6d0586f062c
+
+targets:
+  dev:
+    default: true

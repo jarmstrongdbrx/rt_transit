@@ -2,7 +2,7 @@
 resources:
   pipelines:
     gtfs_rt_pipeline:
-      name: gtfs_rt
+      name: gtfs_rt_etl
       catalog: ${var.catalog_name}
       schema: ${var.schema_name}
       libraries:
@@ -13,3 +13,5 @@ resources:
       photon: true
       edition: "advanced"
       continuous: true
+      configuration:
+        volume_base_path: ${var.volume_base_path}

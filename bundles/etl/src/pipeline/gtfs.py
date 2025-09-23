@@ -13,15 +13,14 @@ in Unity Catalog volumes with the following structure:
 
 import dlt
 from pyspark.sql.functions import (
-    current_timestamp, col, explode, when, isnan, isnull, 
-    regexp_extract, to_timestamp, from_unixtime, coalesce,
-    struct, array, lit, size, filter as spark_filter, concat
+    current_timestamp, col, explode, when, from_unixtime,
+    struct, lit, concat
 )
 from pyspark.sql.types import *
 
 
-# Configuration constants
-VOLUME_BASE_PATH = "/Volumes/prod_lakehouse/vehicle/gtfs_rt_raw"
+# Get volume base path from pipeline configuration
+VOLUME_BASE_PATH = spark.conf.get("volume_base_path")
 
 
 @dlt.table(

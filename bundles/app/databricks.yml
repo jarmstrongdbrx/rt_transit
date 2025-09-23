@@ -1,0 +1,27 @@
+# Databricks asset bundle for the Streamlit application
+# Bundle 5: Streamlit application (deployed last)
+
+include:
+  - ../../shared-variables.yml
+  - resources/*.yml
+
+bundle:
+  name: gtfs_rt_app
+  uuid: 4f9f333d-5df8-66f8-f8fa-f9f3819f395f
+
+resources:
+  apps:
+    gtfs_rt_app:
+      name: gtfs-rt-app
+      description: 'GTFS Real-time Transit Data Application - Streamlit Dashboard'
+      source_code_path: ./src/app
+      resources:
+        - name: "app-database"
+          database:
+            database_name: ${var.logical_database_name}
+            instance_name: ${var.database_instance_name}
+            permission: "CAN_CONNECT_AND_CREATE"
+
+targets:
+  dev:
+    default: true
