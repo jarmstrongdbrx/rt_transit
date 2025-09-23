@@ -54,30 +54,31 @@ The platform follows a modern data lakehouse architecture:
 
 ### Deployment
 
-This project uses Databricks Asset Bundles for deployment:
+This project uses multiple Databricks Asset Bundles for deployment. Use the provided deployment script for easy setup:
 
 ```bash
-# Deploy to development environment
-databricks bundle deploy --target dev
+# Deploy all bundles in the correct order
+./deploy.sh
 
-# Start the data ingestion jobs
-databricks bundle run gtfs_rt_job --target dev
-
-# Launch the Streamlit app
-databricks apps start gtfs-rt-app --target dev
+# Or deploy individual bundles in order:
+./deploy.sh --infrastructure    # Infrastructure first
+./deploy.sh --ingestion-job     # Then ingestion job
+./deploy.sh --etl              # Then ETL pipeline
+./deploy.sh --database         # Then synced tables
+./deploy.sh --app              # Finally the app
 ```
 
 ### Configuration
 
 Key configuration is managed through:
 
-- `databricks.yml` - Main bundle configuration
-- `resources/gtfs_rt.job.yml` - Data ingestion job definitions  
-- `resources/gtfs_rt.pipeline.yml` - DLT pipeline configuration
+- `shared-variables.yml` - Centralized configuration variables for all bundles
+- `bundles/*/databricks.yml` - Individual bundle configurations
+- `bundles/*/resources/*.yml` - Resource definitions for each bundle
 
 #### Databricks Resources Deployed
 
-The `databricks.yml` bundle configuration deploys the following resources (including all resources defined in `resources/*.yml`):
+The multi-bundle configuration deploys the following resources across five bundles:
 
 **Infrastructure Resources:**
 - **Database Instance** (`demo-db`) - CU_1 capacity Lakebase database for real-time queries
@@ -156,19 +157,40 @@ The platform ingests three types of real-time data from HSL:
 
 ```
 rt_transit/
-├── databricks.yml              # Main bundle configuration
-├── resources/                  # Databricks resource definitions
-│   ├── gtfs_rt.job.yml        # Data ingestion jobs
-│   └── gtfs_rt.pipeline.yml   # DLT pipeline config
-├── src/
-│   ├── app/                   # Streamlit dashboard
-│   │   ├── app.py            # Main application
-│   │   ├── app.yaml          # App configuration  
-│   │   └── requirements.txt  # Python dependencies
-│   ├── pipeline/             # Data processing
-│   │   └── gtfs.py          # DLT pipeline definitions
-│   └── raw/                  # Data ingestion
-│       └── gtfs_rt_raw_ingest.py  # Raw data ingestion script
+├── bundles/                   # Multi-bundle Databricks Asset Bundles
+│   ├── infrastructure/        # Infrastructure components
+│   │   └── databricks.yml    # Catalog, schema, volume, database instance
+│   ├── ingestion-job/         # Raw data ingestion
+│   │   ├── databricks.yml    # Job bundle configuration
+│   │   ├── resources/        # Resource definitions
+│   │   │   └── gtfs_rt.job.yml
+│   │   └── src/              # Source code for ingestion
+│   │       └── raw/
+│   │           └── gtfs_rt_raw_ingest.py
+│   ├── etl/                  # Data processing pipeline
+│   │   ├── databricks.yml    # ETL bundle configuration
+│   │   ├── resources/        # Resource definitions
+│   │   │   └── gtfs_rt.pipeline.yml
+│   │   └── src/              # Source code for pipeline
+│   │       ├── pipeline/
+│   │       │   └── gtfs.py
+│   │       └── raw/
+│   │           └── gtfs_rt_raw_ingest.py
+│   ├── database/             # Synced tables
+│   │   └── databricks.yml    # Synced tables configuration
+│   └── app/                  # Streamlit application
+│       ├── databricks.yml    # App bundle configuration
+│       └── src/              # Source code for app
+│           └── app/
+│               ├── app.py
+│               ├── app.yaml
+│               └── requirements.txt
+├── resources/                 # Legacy resource definitions (deprecated)
+│   ├── gtfs_rt.job.yml
+│   └── gtfs_rt.pipeline.yml
+├── shared-variables.yml       # Shared configuration variables
+├── deploy.sh                  # Multi-bundle deployment script
+├── destroy.sh                 # Multi-bundle destruction script
 └── README.md
 ```
 

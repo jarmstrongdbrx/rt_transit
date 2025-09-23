@@ -171,8 +171,10 @@ bundles/
 │   ├── resources/              # Resource definitions
 │   │   └── gtfs_rt.pipeline.yml # DLT pipeline for data processing
 │   └── src/                    # Source code for pipeline
-│       └── pipeline/
-│           └── gtfs.py
+│       ├── pipeline/
+│       │   └── gtfs.py
+│       └── raw/
+│           └── gtfs_rt_raw_ingest.py
 ├── database/
 │   └── databricks.yml          # Synced Tables bundle configuration
 └── app/
@@ -234,7 +236,8 @@ cd bundles/infrastructure && databricks bundle deploy --target dev --force --for
 ```bash
 # Validate specific bundle (run from bundle directory)
 cd bundles/infrastructure && databricks bundle validate --target dev
-cd bundles/ingestion && databricks bundle validate --target dev
+cd bundles/ingestion-job && databricks bundle validate --target dev
+cd bundles/etl && databricks bundle validate --target dev
 cd bundles/database && databricks bundle validate --target dev
 cd bundles/app && databricks bundle validate --target dev
 ```
@@ -243,7 +246,8 @@ cd bundles/app && databricks bundle validate --target dev
 ```bash
 # Deploy specific bundle manually (in order, run from bundle directory)
 cd bundles/infrastructure && databricks bundle deploy --target dev --auto-approve
-cd bundles/ingestion && databricks bundle deploy --target dev --auto-approve
+cd bundles/ingestion-job && databricks bundle deploy --target dev --auto-approve
+cd bundles/etl && databricks bundle deploy --target dev --auto-approve
 cd bundles/database && databricks bundle deploy --target dev --auto-approve  # Synced tables
 cd bundles/app && databricks bundle deploy --target dev --auto-approve
 ```
@@ -251,10 +255,10 @@ cd bundles/app && databricks bundle deploy --target dev --auto-approve
 ### Manual Job/App Management
 ```bash
 # Start ingestion job (collects raw data)
-cd bundles/ingestion && databricks bundle run gtfs_rt_ingestion_job --target dev
+cd bundles/ingestion-job && databricks bundle run gtfs_rt_ingestion_job --target dev
 
 # Start DLT pipeline (processes collected data)
-cd bundles/ingestion && databricks pipelines start-update --pipeline-name gtfs_rt_ingestion
+cd bundles/etl && databricks pipelines start-update --pipeline-name gtfs_rt_etl
 
 # Start Streamlit app
 cd bundles/app && databricks apps start gtfs-rt-app --target dev
